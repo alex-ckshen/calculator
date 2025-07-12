@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1E3A8A, #3B82F6, #064E3B, #065F46);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .history-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .history {
+            width: 150px;
+            height: 480px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 10px;
+            color: #fff;
+            font-size: 1em;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        #historyItems {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .history div {
+            margin-bottom: 5px;
+        }
+        .history-clear-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .history-clear {
+            width: 130px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1em;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+        .history-clear:hover {
+            transform: scale(1.05);
+        }
+        .history-clear:active {
+            animation: bounce 0.3s ease;
+        }
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-gap: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .display {
+            grid-column: span 4;
+            height: 80px;
+            background: rgba(255, 255, 250, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 10px;
+            font-size: 2em;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .button {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+        .button:hover {
+            transform: scale(1.05);
+        }
+        @keyframes bounce {
+            0% { transform: scale(0.5); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes liquidJiggle {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(2deg); }
+            50% { transform: scale(1.05) rotate(-2deg); }
+            75% { transform: scale(1.1) rotate(1deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .button:active {
+            animation: bounce 0.3s ease;
+        }
+        .button.jiggle {
+            animation: liquidJiggle 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="history-wrapper">
+            <div class="history" id="history">
+                <div id="historyItems"></div>
+            </div>
+            <div class="history-clear-container">
+                <div class="history-clear" id="historyClear">Clear</div>
+            </div>
+        </div>
+        <div class="calculator">
+            <div class="display" id="display">0</div>
+            <div class="button" data-action="clear">C</div>
+            <div class="button" data-value="(">(</div>
+            <div class="button" data-value=")">)</div>
+            <div class="button" data-action="/">÷</div>
+            <div class="button" data-value="7">7</div>
+            <div class="button" data-value="8">8</div>
+            <div class="button" data-value="9">9</div>
+            <div class="button" data-action="*">×</div>
+            <div class="button" data-value="4">4</div>
+            <div class="button" data-value="5">5</div>
+            <div class="button" data-value="6">6</div>
+            <div class="button" data-action="-">-</div>
+            <div class="button" data-value="1">1</div>
+            <div class="button" data-value="2">2</div>
+            <div class="button" data-value="3">3</div>
+            <div class="button" data-action="+">+</div>
+            <div class="button" data-value="0">0</div>
+            <div class="button" data-value=".">.</div>
+            <div class="button" data-action="delete">⌫</div>
+            <div class="button" data-action="equals">=</div>
+        </div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        const historyItemsContainer = document.getElementById('historyItems');
+        const historyClear = document.getElementById('historyClear');
+        const buttons = document.querySelectorAll('.button');
+        let currentInput = '0';
+        let expression = '';
+        let historyItems = [];
+        let justCalculated = false;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => handleInput(button.getAttribute('data-value'), button.getAttribute('data-action')));
+        });
+
+        historyClear.addEventListener('click', () => {
+            historyItems = [];
+            handleInput(null, 'clear');
+            updateHistory();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            let targetButton = null;
+            if (/[0-9]/.test(key)) {
+                handleInput(key, null);
+                targetButton = document.querySelector(`.button[data-value="${key}"]`);
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                handleInput(null, key);
+                targetButton = document.querySelector(`.button[data-action="${key}"]`);
+            } else if (key === 'Enter') {
+                handleInput(null, 'equals');
+                targetButton = document.querySelector('.button[data-action="equals"]');
+            } else if (key === 'Escape') {
+                handleInput(null, 'clear');
+                targetButton = document.querySelector('.button[data-action="clear"]');
+            } else if (key === '(' || key === ')') {
+                handleInput(key, null);
+                targetButton = document.querySelector(`.button[data-value="${key}"]`);
+            } else if (key === '.') {
+                handleInput('.', null);
+                targetButton = document.querySelector('.button[data-value="."]');
+            } else if (key === 'Backspace' || key === 'Delete') {
+                handleInput(null, 'delete');
+                targetButton = document.querySelector('.button[data-action="delete"]');
+            }
+            if (targetButton) {
+                targetButton.classList.add('jiggle');
+                setTimeout(() => targetButton.classList.remove('jiggle'), 400);
+            }
+        });
+
+        function updateHistory() {
+            historyItemsContainer.innerHTML = historyItems.map(item => `<div>${item}</div>`).join('');
+            historyItemsContainer.scrollTop = historyItemsContainer.scrollHeight;
+        }
+
+        function handleInput(value, action) {
+            if (value) {
+                if (justCalculated && (value === '.' || /[0-9]/.test(value))) {
+                    currentInput = value;
+                    expression = value;
+                    justCalculated = false;
+                } else {
+                    if (currentInput === '0' && value !== '.') {
+                        currentInput = value;
+                    } else {
+                        currentInput += value;
+                    }
+                    expression += value;
+                }
+                display.textContent = currentInput;
+            } else if (action) {
+                if (action === 'clear') {
+                    currentInput = '0';
+                    expression = '';
+                    justCalculated = false;
+                    display.textContent = currentInput;
+                } else if (action === 'equals') {
+                    try {
+                        const result = eval(expression.replace('÷', '/').replace('×', '*'));
+                        historyItems.push(`${expression} = ${result}`);
+                        updateHistory();
+                        currentInput = result.toString();
+                        expression = '';
+                        justCalculated = true;
+                        display.textContent = currentInput;
+                    } catch (error) {
+                        display.textContent = 'Error';
+                        historyItems.push(`${expression} = Error`);
+                        updateHistory();
+                        currentInput = '0';
+                        expression = '';
+                        justCalculated = false;
+                    }
+                } else if (action === 'delete') {
+                    if (currentInput.length > 1) {
+                        currentInput = currentInput.slice(0, -1);
+                        expression = expression.slice(0, -1);
+                    } else {
+                        currentInput = '0';
+                        expression = expression.slice(0, -1);
+                    }
+                    display.textContent = currentInput || '0';
+                    justCalculated = false;
+                } else {
+                    if (justCalculated) {
+                        expression = currentInput + action;
+                        justCalculated = false;
+                    } else {
+                        expression += action;
+                    }
+                    currentInput = '';
+                    display.textContent = expression;
+                }
+            }
+            if (expression && action !== 'equals' && !historyItems.includes(expression)) {
+                historyItems.push(expression);
+                updateHistory();
+            }
+        }
+    </script>
+</body>
+</html>
